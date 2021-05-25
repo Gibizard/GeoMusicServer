@@ -1,6 +1,7 @@
 package com.example.plugins
 
 import com.example.dao.IpListDao
+import com.example.model.GeoTag
 import com.example.model.Ip
 import io.ktor.application.*
 import io.ktor.features.*
@@ -11,7 +12,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Application.configureRouting(dao: IpListDao) {
-    install(ContentNegotiation){
+    install(ContentNegotiation) {
         register(ContentType.Application.Json, JacksonConverter())
     }
 
@@ -20,8 +21,14 @@ fun Application.configureRouting(dao: IpListDao) {
             call.respondText("Hello World!")
         }
 
-        get("/ipList") {
-            call.respond(mapOf("ipList" to dao.getAllIps()))
+        post("/ipList/{radius}") {
+            val radius = call.parameters["radius"]
+            val ip = call.request.origin.remoteHost
+            val geoTag = call.receive<GeoTag>()
+            val ipList = dao.getIpsOnRadius(ip, radius!!.toInt())
+
+            dao.createIp(ip, geoTag.geoTag)
+            call.respond(ipList)
         }
 
         post("/addIp") {
@@ -35,12 +42,12 @@ fun Application.configureRouting(dao: IpListDao) {
             id?.let {
                 dao.deleteIp(id.toInt())
                 call.respond("Ip deleted")
-            }?:call.respond("Invalid ip")
+            } ?: call.respond("Invalid ip")
         }
 
         put("/updateIp") {
             val ip = call.receive<Ip>()
-            dao.updateIp(ip.id, ip.ip?:"", ip.geoTag?:"")
+            dao.updateIp(ip.id, ip.ip ?: "", ip.geoTag ?: "")
             call.respond("Ip updated successfully")
         }
     }

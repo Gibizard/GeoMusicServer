@@ -26,7 +26,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation( "io.ktor:ktor-jackson:$ktor_version")
+    implementation("io.ktor:ktor-jackson:$ktor_version")
+    implementation("com.google.android.gms:play-services-location:11.8.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-
 }

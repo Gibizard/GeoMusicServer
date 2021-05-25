@@ -11,11 +11,7 @@ fun main() {
     val dao = IpListDao(Database.connect("jdbc:h2:~/test;DB_CLOSE_DELAY=-1;", driver = "org.h2.Driver"))
     dao.init()
 
-    //val dbServer = Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers").start();
-
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
         configureRouting(dao)
     }.start(wait = true)
-
-    //dbServer.stop()
 }
